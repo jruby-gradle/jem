@@ -11,6 +11,12 @@ repositories {
 
 dependencies {
     compile "org.codehaus.groovy:groovy-all:2.4.0+"
+    compile 'joda-time:joda-time:2.6+'
+
+    compile 'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.5.4'
+    compile 'com.fasterxml.jackson.core:jackson-annotations:2.5.4'
+    compile 'com.fasterxml.jackson.core:jackson-databind:2.5.4'
+
     codenarc "org.codenarc:CodeNarc:0.24"
     testCompile "org.spockframework:spock-core:1.0-groovy-2.4"
 }
