@@ -48,3 +48,24 @@ plugins.withType(JavaPlugin) {
         task.targetCompatibility = project.targetCompatibility
     }
 }
+
+/* Add the sources jar to the list of artifacts to publish */
+task sourcesJar(type: Jar, dependsOn: classes) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+task groovydocJar(type: Jar) {
+    dependsOn groovydoc
+    classifier = 'groovydoc'
+    from groovydoc.destinationDir
+}
+
+artifacts {
+    archives sourcesJar
+    archives groovydocJar
+}
+
+assemble.dependsOn check
+assemble.dependsOn groovydocJar
+assemble.dependsOn sourcesJar
