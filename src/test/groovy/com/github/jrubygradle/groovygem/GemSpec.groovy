@@ -6,6 +6,8 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
 import spock.lang.*
 
+import java.util.zip.GZIPInputStream
+
 class GemSpec extends Specification {
     final String FIXTURES_ROOT = new File(['src', 'test', 'resources'].join(File.separator)).absolutePath
     final String METADATA_FIXTURE = [FIXTURES_ROOT, 'thor-0.19.1', 'metadata'].join(File.separator)
@@ -41,6 +43,21 @@ class GemSpec extends Specification {
 
         expect:
         Gem.fromFile(f) instanceof Gem
+    }
+
+    def "fromFile with a GZIPInputStream should return a Gem"() {
+        given:
+        Gem gem
+        final GZIPInputStream f = new GZIPInputStream(new FileInputStream("${METADATA_FIXTURE}.gz"))
+
+        when:
+        gem = Gem.fromFile(f)
+
+        then:
+        gem instanceof Gem
+
+        and:
+        gem.name == 'thor'
     }
 
     def "a metadata file should parse into a Gem"() {
