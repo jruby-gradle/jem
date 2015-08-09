@@ -4,10 +4,12 @@ import spock.lang.*
 
 import java.nio.file.Files
 import java.nio.file.Path
+import org.apache.commons.io.FileUtils
 
 class GemInstallerSpec extends Specification {
-    final String FIXTURES_ROOT = new File(['src', 'test', 'resources'].join(File.separator)).absolutePath
-    final String GEM_FIXTURE = [FIXTURES_ROOT, 'thor-0.19.1.gem'].join(File.separator)
+    static final String FIXTURES_ROOT = new File(['src', 'test', 'resources'].join(File.separator)).absolutePath
+    static final String GEM_FILENAME = 'thor-0.19.1.gem'
+    static final String GEM_FIXTURE = [FIXTURES_ROOT, GEM_FILENAME].join(File.separator)
 
     GemInstaller installer
     Path installDirPath = Files.createTempDirectory("geminstallerspec")
@@ -65,5 +67,32 @@ class GemInstallerSpec extends Specification {
 
         expect:
         installer.isValidGem(gem)
+    }
+}
+
+class GemInstallerIntegrationSpec extends Specification {
+    GemInstaller installer
+
+    Path installDirPath = Files.createTempDirectory("geminstallerintegrationspec")
+    String installDir = installDirPath as String
+
+    def setup() {
+        installer = new GemInstaller(installDir, [new File(GemInstallerSpec.GEM_FIXTURE)])
+    }
+
+    def cleanup() {
+        File dir = new File(installDir)
+
+        if (dir.exists() && dir.absolutePath.startsWith('/tmp')) {
+            FileUtils.deleteDirectory(dir)
+        }
+    }
+
+    def "install() should actually install my gem in the happy path"() {
+        when:
+        installer.install()
+
+        then:
+        (new File(installDir, ['cache', GemInstallerSpec.GEM_FILENAME].join(File.separator))).exists()
     }
 }

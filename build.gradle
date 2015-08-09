@@ -29,6 +29,8 @@ dependencies {
     codenarc "org.codenarc:CodeNarc:0.24"
 
     testCompile "org.spockframework:spock-core:1.0-groovy-2.4"
+    /* used for cleaning up directories in tests */
+    testCompile 'org.apache.commons:commons-io:1.3.2+'
 }
 
 codenarc {

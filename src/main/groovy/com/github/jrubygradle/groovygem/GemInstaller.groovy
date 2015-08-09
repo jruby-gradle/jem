@@ -7,6 +7,12 @@ import groovy.transform.CompileStatic
  */
 @CompileStatic
 class GemInstaller {
+    static enum DuplicateBehavior {
+        OVERWRITE,
+        SKIP,
+        FAIL
+    }
+
     protected File installDirectory
     protected List<File> gems
 

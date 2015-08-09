@@ -9,6 +9,10 @@ import org.slf4j.LoggerFactory
 
 import groovy.transform.CompileStatic
 
+import com.github.jrubygradle.groovygem.GemInstaller.DuplicateBehavior
+
+import java.nio.file.Files
+
 @CompileStatic
 class GemInstaller {
     static final List<String> GEM_HOME_DIRS = ['bin', 'build_info', 'cache', 'doc',
@@ -23,6 +27,27 @@ class GemInstaller {
         this.installDirectory = new File(installDir)
         this.gems = gems
         this.fileSystemManager = VFS.manager
+    }
+
+    /** Install and overwrite anything that stands in the way */
+    void install() {
+        install(DuplicateBehavior.OVERWRITE)
+    }
+
+    void install(DuplicateBehavior onDuplicateBehavior) {
+        if (!mkdirs()) {
+            /* raise some exception? */
+        }
+
+        gems.each { File gem ->
+            installGem(installDirectory, gem, onDuplicateBehavior)
+        }
+    }
+
+    boolean installGem(File installDir, File gem, DuplicateBehavior onDuplicate) {
+        cacheGemInInstallDir(installDir, gem)
+
+        return true
     }
 
     /**
@@ -79,5 +104,11 @@ class GemInstaller {
              */
             return false
         }
+    }
+
+    /** Cache the gem in GEM_HOME/cache */
+    protected void cacheGemInInstallDir(File installDir, File gem) {
+        File cacheDir = new File(installDir, 'cache')
+        Files.copy(gem.toPath(), (new File(cacheDir, gem.name)).toPath())
     }
 }
