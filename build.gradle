@@ -12,6 +12,10 @@ repositories {
 dependencies {
     compile "org.codehaus.groovy:groovy-all:2.4.0+"
 
+    compile 'org.slf4j:slf4j-api:1.7.12+'
+    /* using the simple logger at runtime, no need for it at compile time though */
+    runtime 'org.slf4j:slf4j-simple:1.7.12+'
+
     compile 'joda-time:joda-time:2.6+'
 
     /* Used for processing yaml files inside of gems */
