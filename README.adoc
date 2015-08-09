@@ -1,0 +1,4 @@
+= groovy-gem
+
+`groovy-gem` is a library built in link:http://groovy-lang.org[Groovy] for
+processing link:http://guides.rubygems.org/what-is-a-gem/[Ruby .gem files]
