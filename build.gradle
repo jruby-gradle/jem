@@ -7,6 +7,7 @@ description = 'A Groovy-based library for managing Ruby gems'
 
 repositories {
     jcenter()
+    mavenLocal()
 }
 
 dependencies {
@@ -24,13 +25,15 @@ dependencies {
     compile 'com.fasterxml.jackson.core:jackson-databind:2.5.4'
 
     /* Used for reading into tar, aka gem, files */
-    compile 'org.apache.commons:commons-vfs2:2.0+'
+    compile 'org.apache.commons:commons-vfs2:2.1-SNAPSHOT'
+    /* Needed to provide the tar file provider */
+    compile 'org.apache.commons:commons-compress:1.9+'
+    //compile 'org.apache.commons:commons-vfs2:2.0'
+    compile 'org.apache.commons:commons-io:1.3.2+'
 
     codenarc "org.codenarc:CodeNarc:0.24"
 
     testCompile "org.spockframework:spock-core:1.0-groovy-2.4"
-    /* used for cleaning up directories in tests */
-    testCompile 'org.apache.commons:commons-io:1.3.2+'
 }
 
 codenarc {

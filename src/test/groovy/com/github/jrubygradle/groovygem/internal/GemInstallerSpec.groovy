@@ -92,7 +92,10 @@ class GemInstallerIntegrationSpec extends Specification {
         when:
         installer.install()
 
-        then:
+        then: "the gem should be cached in ${installDir}/cache"
         (new File(installDir, ['cache', GemInstallerSpec.GEM_FILENAME].join(File.separator))).exists()
+
+        and: "the ${installDir}/specifications dir should contain the gemspec"
+        (new File(installDir, ['specifications', "${GemInstallerSpec.GEM_FILENAME}spec"].join(File.separator))).exists()
     }
 }

@@ -1,5 +1,6 @@
 package com.github.jrubygradle.groovygem.internal
 
+import org.apache.commons.io.IOUtils
 import org.apache.commons.vfs2.FileNotFolderException
 import org.apache.commons.vfs2.FileObject
 import org.apache.commons.vfs2.FileSystemManager
@@ -9,6 +10,7 @@ import org.slf4j.LoggerFactory
 
 import groovy.transform.CompileStatic
 
+import com.github.jrubygradle.groovygem.Gem
 import com.github.jrubygradle.groovygem.GemInstaller.DuplicateBehavior
 
 import java.nio.file.Files
@@ -45,7 +47,28 @@ class GemInstaller {
     }
 
     boolean installGem(File installDir, File gem, DuplicateBehavior onDuplicate) {
+        /* TODO: isValidGem? */
         cacheGemInInstallDir(installDir, gem)
+
+        FileObject gemTar = fileSystemManager.resolveFile("tar:${gem}")
+        FileObject tempTar = fileSystemManager.resolveFile("tmp://data.tar.gz")
+        /* http://wiki.apache.org/commons/ExtractAndDecompressGzipFiles */
+        FileObject metadata  = fileSystemManager.resolveFile("gz:tar:${gem}!/metadata.gz!metadata")
+
+        Gem gemMetadata = Gem.fromFile(metadata.content.inputStream)
+        logger.info("We've processed metadata for ${gemMetadata.name} at version ${gemMetadata.version}")
+
+        long size = gemTar.getChild('data.tar.gz').content.write(tempTar)
+        logger.info("Extracted data.tar.gz from ${gem} (${size} bytes)")
+
+        FileObject dataTar = fileSystemManager.resolveFile("tgz:${tempTar}")
+        logger.info("The contents of our data.tar.gz: ${dataTar.children}")
+
+        extractSpecification(installDir, dataTar, gemMetadata)
+
+        //FileObject metadata = fileSystemManager.resolveFile("gz:tar:${gem.absolutePath}!/metadata.gz!metadata")
+        //StringWriter writer = new StringWriter()
+        //IOUtils.copy(metadata.content.inputStream, writer, null)
 
         return true
     }
@@ -110,5 +133,15 @@ class GemInstaller {
     protected void cacheGemInInstallDir(File installDir, File gem) {
         File cacheDir = new File(installDir, 'cache')
         Files.copy(gem.toPath(), (new File(cacheDir, gem.name)).toPath())
+    }
+
+    /** Extract the gemspec file from the dataTarGz provided into the ${installDir}/specifications */
+    protected void extractSpecification(File installDir, FileObject dataTarGz, Gem gem) {
+        FileObject gemspec = dataTarGz.getChild("${gem.name}.gemspec")
+        String outputFile = "${gem.name}-${gem.version}.gemspec"
+
+        File specification = new File(installDir, ['specifications', outputFile].join(File.separator))
+
+        IOUtils.copy(gemspec.content.inputStream, specification.newOutputStream())
     }
 }
