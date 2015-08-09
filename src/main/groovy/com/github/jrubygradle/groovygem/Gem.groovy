@@ -58,7 +58,7 @@ class Gem {
     /**
      * Take the given argument and produce a {@code Gem} instance
      *
-     * @param metadata a {@code java.lang.String} or a {@code java.io.File}
+     * @param metadata a {@code java.lang.String}, a {@code java.io.File} or a {@code java.util.zip.GZIPInputStream}
      * @return
      */
     static Gem fromFile(Object metadata) {
@@ -73,13 +73,13 @@ class Gem {
             metadataFile = metadata as File
         }
         else if (metadata instanceof InputStream) {
-            return mapper.readValue(metadata, Gem.class)
+            return mapper.readValue(metadata, Gem)
         }
 
         if (!(metadataFile?.exists())) {
             return null
         }
 
-        return mapper.readValue(metadataFile, Gem.class)
+        return mapper.readValue(metadataFile, Gem)
     }
 }

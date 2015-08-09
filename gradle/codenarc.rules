@@ -164,7 +164,7 @@ ruleset {
     InconsistentPropertyLocking
     InconsistentPropertySynchronization
     InsecureRandom
-    Instanceof
+    //Instanceof
     IntegerGetInteger
     InterfaceName
     InterfaceNameSameAsSuperInterface
@@ -184,7 +184,7 @@ ruleset {
     JUnitUnnecessarySetUp
     JUnitUnnecessaryTearDown
     JUnitUnnecessaryThrowsException
-    JavaIoPackageAccess
+    //JavaIoPackageAccess
     JdbcConnectionReference
     JdbcResultSetReference
     JdbcStatementReference
@@ -320,7 +320,7 @@ ruleset {
     UnnecessaryPackageReference
     UnnecessaryParenthesesForMethodCallWithClosure
     UnnecessaryPublicModifier
-    UnnecessaryReturnKeyword
+    //UnnecessaryReturnKeyword
     UnnecessarySafeNavigationOperator
     UnnecessarySelfAssignment
     UnnecessarySemicolon
