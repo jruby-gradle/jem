@@ -62,24 +62,33 @@ class Gem {
      * @return
      */
     static Gem fromFile(Object metadata) {
-        File metadataFile
-        ObjectMapper mapper = new ObjectMapper(new YAMLFactory())
-        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-
         if (metadata instanceof String) {
-            metadataFile = new File(metadata)
+            return createGemFromFile(new File(metadata))
         }
-        else if (metadata instanceof File) {
-            metadataFile = metadata as File
+        if (metadata instanceof File) {
+            return createGemFromFile(metadata as File)
         }
-        else if (metadata instanceof InputStream) {
-            return mapper.readValue(metadata, Gem)
+        if (metadata instanceof InputStream) {
+            return createGemFromInputStream(metadata as InputStream)
         }
 
-        if (!(metadataFile?.exists())) {
+        return null
+    }
+
+    private static Gem createGemFromFile(File gemMetadataFile) {
+        if (!gemMetadataFile.exists()) {
             return null
         }
+        return getYamlMapper().readValue(gemMetadataFile, Gem)
+    }
 
-        return mapper.readValue(metadataFile, Gem)
+    private static Gem createGemFromInputStream(InputStream gemMetadataStream) {
+        return getYamlMapper().readValue(gemMetadataStream, Gem)
+    }
+
+    private static ObjectMapper getYamlMapper() {
+        ObjectMapper mapper = new ObjectMapper(new YAMLFactory())
+        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+        return mapper
     }
 }

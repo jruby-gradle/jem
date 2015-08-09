@@ -1,9 +1,5 @@
 package com.github.jrubygradle.groovygem
 
-import com.fasterxml.jackson.databind.DeserializationConfig
-import com.fasterxml.jackson.databind.DeserializationFeature
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
 import spock.lang.*
 
 import java.util.zip.GZIPInputStream
