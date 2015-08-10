@@ -27,7 +27,7 @@ class Gem {
     String platform
 
     @JsonProperty
-    String email
+    Object email
 
     @JsonProperty
     String homepage
