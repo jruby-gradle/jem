@@ -100,7 +100,8 @@ Gem::Specification.new do |s|
   s.description = ${JsonOutput.toJson(description)}
   s.homepage = "${homepage}"
   s.authors = ${JsonOutput.toJson(authors)}
-  s.email = "${email}"
+  s.email = ${JsonOutput.toJson(email)}
+  s.platform = "${platform}"
 
   s.require_paths = ${JsonOutput.toJson(requirePaths)}
   s.executables = ${JsonOutput.toJson(executables)}

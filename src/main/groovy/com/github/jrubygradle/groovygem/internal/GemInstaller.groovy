@@ -145,7 +145,11 @@ class GemInstaller {
 
     /** Extract the gemspec file from the {@code Gem} provided into the ${installDir}/specifications */
     protected void extractSpecification(File installDir, Gem gem) {
-        String outputFileName = "${gem.name}-${gem.version.version}.gemspec"
+        String fileName = "${gem.name}-${gem.version.version}"
+        if (gem.platform != 'ruby') {
+            fileName = "${fileName}-${gem.platform}"
+        }
+        String outputFileName = "${fileName}.gemspec"
         FileObject outputFile = fileSystemManager.resolveFile(new File(installDir, 'specifications'), outputFileName)
 
         PrintWriter writer = new PrintWriter(outputFile.content.outputStream)
@@ -156,6 +160,9 @@ class GemInstaller {
 
     protected void extractData(File installDir, FileObject dataTarGz, Gem gem) {
         String dir = "${gem.name}-${gem.version.version}"
+        if (gem.platform != 'ruby') {
+            dir = "${dir}-${gem.platform}"
+        }
         logger.info("Extracting into ${installDir} from ${gem.name}")
         FileObject outputDir = fileSystemManager.resolveFile(new File(installDir, 'gems'), dir)
         outputDir.copyFrom(dataTarGz, new AllFileSelector())
