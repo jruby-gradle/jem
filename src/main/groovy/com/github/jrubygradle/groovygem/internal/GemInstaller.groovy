@@ -51,7 +51,7 @@ class GemInstaller {
         cacheGemInInstallDir(installDir, gem)
 
         FileObject gemTar = fileSystemManager.resolveFile("tar:${gem}")
-        FileObject tempTar = fileSystemManager.resolveFile("tmp://data.tar.gz")
+        FileObject tempTar = fileSystemManager.resolveFile("ram://data.tar.gz")
         /* http://wiki.apache.org/commons/ExtractAndDecompressGzipFiles */
         FileObject metadata  = fileSystemManager.resolveFile("gz:tar:${gem}!/metadata.gz!metadata")
 
