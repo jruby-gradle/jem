@@ -156,13 +156,20 @@ class GemInstaller {
 
     protected void extractData(File installDir, FileObject dataTarGz, Gem gem) {
         String dir = "${gem.name}-${gem.version.version}"
+        logger.info("Extracting into ${installDir} from ${gem.name}")
         FileObject outputDir = fileSystemManager.resolveFile(new File(installDir, 'gems'), dir)
         outputDir.copyFrom(dataTarGz, new AllFileSelector())
         outputDir.close()
     }
 
     protected void extractExecutables(File installDir, FileObject dataTarGz, Gem gem) {
+        String binDir = gem.bindir ?: 'bin'
         FileObject binObject = fileSystemManager.resolveFile(installDir, 'bin')
-        binObject.copyFrom(dataTarGz.getChild(gem.bindir), new AllFileSelector())
+        FileObject child = dataTarGz.getChild(binDir)
+        if (!child) {
+            return
+        }
+        binObject.copyFrom(child, new AllFileSelector())
+        binObject.close()
     }
 }
