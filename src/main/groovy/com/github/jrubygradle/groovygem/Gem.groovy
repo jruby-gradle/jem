@@ -95,20 +95,25 @@ class Gem {
 #           <https://github.com/jruby-gradle/groovy-gem>
 
 Gem::Specification.new do |s|
-  s.name = "${name}"
-  s.version = "${version.version}"
-  s.description = ${JsonOutput.toJson(description)}
-  s.homepage = "${homepage}"
-  s.authors = ${JsonOutput.toJson(authors)}
-  s.email = ${JsonOutput.toJson(email)}
-  s.platform = "${platform}"
+  s.name = ${sanitize(name)}
+  s.version = ${sanitize(version.version)}
+  s.description = ${sanitize(description)}
+  s.homepage = ${sanitize(homepage)}
+  s.authors = ${sanitize(authors)}
+  s.email = ${sanitize(email)}
+  s.licenses = ${sanitize(licenses)}
 
-  s.require_paths = ${JsonOutput.toJson(requirePaths)}
-  s.executables = ${JsonOutput.toJson(executables)}
-  s.licenses = ${JsonOutput.toJson(licenses)}
-  s.rubygems_version = "${rubygemsVersion}"
+  s.platform = ${sanitize(platform)}
+  s.require_paths = ${sanitize(requirePaths)}
+  s.executables = ${sanitize(executables)}
+  s.rubygems_version = ${sanitize(rubygemsVersion)}
 end
 """
+    }
+
+    /** Convert whatever object we're given into a safe (see: JSON) reprepsentation */
+    protected String sanitize(Object value) {
+        return JsonOutput.toJson(value)
     }
 
     private static Gem createGemFromFile(File gemMetadataFile) {
