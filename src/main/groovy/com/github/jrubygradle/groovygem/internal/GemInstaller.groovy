@@ -55,12 +55,13 @@ class GemInstaller {
         cacheGemInInstallDir(installDir, gem)
 
         FileObject gemTar = fileSystemManager.resolveFile("tar:${gem}")
-        FileObject tempTar = fileSystemManager.resolveFile("ram://data.tar.gz")
+        FileObject tempTar = fileSystemManager.resolveFile("ram://${gem.name}-data.tar.gz")
         /* http://wiki.apache.org/commons/ExtractAndDecompressGzipFiles */
         FileObject metadata  = fileSystemManager.resolveFile("gz:tar:${gem}!/metadata.gz!metadata")
 
         Gem gemMetadata = Gem.fromFile(metadata.content.inputStream)
         logger.info("We've processed metadata for ${gemMetadata.name} at version ${gemMetadata.version}")
+        metadata.content.close()
 
         long size = gemTar.getChild('data.tar.gz').content.write(tempTar)
         logger.info("Extracted data.tar.gz from ${gem} (${size} bytes)")
@@ -72,9 +73,10 @@ class GemInstaller {
         extractData(installDir, dataTar, gemMetadata)
         extractExecutables(installDir, dataTar, gemMetadata)
 
-        //FileObject metadata = fileSystemManager.resolveFile("gz:tar:${gem.absolutePath}!/metadata.gz!metadata")
-        //StringWriter writer = new StringWriter()
-        //IOUtils.copy(metadata.content.inputStream, writer, null)
+        gemTar.close()
+        metadata.close()
+        tempTar.delete()
+        dataTar.delete()
 
         return true
     }
@@ -149,12 +151,14 @@ class GemInstaller {
         PrintWriter writer = new PrintWriter(outputFile.content.outputStream)
         writer.write(gem.toRuby())
         writer.flush()
+        outputFile.content.close()
     }
 
     protected void extractData(File installDir, FileObject dataTarGz, Gem gem) {
         String dir = "${gem.name}-${gem.version.version}"
         FileObject outputDir = fileSystemManager.resolveFile(new File(installDir, 'gems'), dir)
         outputDir.copyFrom(dataTarGz, new AllFileSelector())
+        outputDir.close()
     }
 
     protected void extractExecutables(File installDir, FileObject dataTarGz, Gem gem) {
