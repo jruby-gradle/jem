@@ -97,7 +97,7 @@ class Gem {
 Gem::Specification.new do |s|
   s.name = "${name}"
   s.version = "${version.version}"
-  s.description = "${description}"
+  s.description = ${JsonOutput.toJson(description)}
   s.homepage = "${homepage}"
   s.authors = ${JsonOutput.toJson(authors)}
   s.email = "${email}"
