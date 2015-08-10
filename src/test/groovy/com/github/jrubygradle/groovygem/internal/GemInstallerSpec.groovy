@@ -8,7 +8,8 @@ import org.apache.commons.io.FileUtils
 
 class GemInstallerSpec extends Specification {
     static final String FIXTURES_ROOT = new File(['src', 'test', 'resources'].join(File.separator)).absolutePath
-    static final String GEM_FILENAME = 'thor-0.19.1.gem'
+    static final String GEM_NAME = 'thor-0.19.1'
+    static final String GEM_FILENAME = "${GEM_NAME}.gem"
     static final String GEM_FIXTURE = [FIXTURES_ROOT, GEM_FILENAME].join(File.separator)
 
     GemInstaller installer
@@ -84,6 +85,7 @@ class GemInstallerIntegrationSpec extends Specification {
         File dir = new File(installDir)
 
         if (dir.exists() && dir.absolutePath.startsWith('/tmp')) {
+            println dir
             FileUtils.deleteDirectory(dir)
         }
     }
@@ -96,6 +98,17 @@ class GemInstallerIntegrationSpec extends Specification {
         (new File(installDir, ['cache', GemInstallerSpec.GEM_FILENAME].join(File.separator))).exists()
 
         and: "the ${installDir}/specifications dir should contain the gemspec"
-        (new File(installDir, ['specifications', "${GemInstallerSpec.GEM_FILENAME}spec"].join(File.separator))).exists()
+        File specification = new File(installDir, ['specifications', "${GemInstallerSpec.GEM_NAME}.gemspec"].join(File.separator))
+        specification.isFile()
+        specification.size() > 0
+
+        and: "the ${installDir}/gems/ directory should contain an extract of data.tar.gz"
+        File outputDir = new File(installDir, ['gems', GemInstallerSpec.GEM_NAME].join(File.separator))
+        outputDir.isDirectory()
+        (new File(outputDir, "thor.gemspec")).isFile()
+
+        and: "the executable should be placed in ${installDir}/bin"
+        File binFile = new File(installDir, ['bin', 'thor'].join(File.separator))
+        binFile.isFile()
     }
 }

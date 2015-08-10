@@ -1,8 +1,12 @@
 package com.github.jrubygradle.groovygem.internal
 
 import org.apache.commons.io.IOUtils
+import org.apache.commons.vfs2.AllFileSelector
+import org.apache.commons.vfs2.FileFilter
+import org.apache.commons.vfs2.FileFilterSelector
 import org.apache.commons.vfs2.FileNotFolderException
 import org.apache.commons.vfs2.FileObject
+import org.apache.commons.vfs2.FileSelectInfo
 import org.apache.commons.vfs2.FileSystemManager
 import org.apache.commons.vfs2.VFS
 import org.slf4j.Logger
@@ -64,7 +68,9 @@ class GemInstaller {
         FileObject dataTar = fileSystemManager.resolveFile("tgz:${tempTar}")
         logger.info("The contents of our data.tar.gz: ${dataTar.children}")
 
-        extractSpecification(installDir, dataTar, gemMetadata)
+        extractSpecification(installDir, gemMetadata)
+        extractData(installDir, dataTar, gemMetadata)
+        extractExecutables(installDir, dataTar, gemMetadata)
 
         //FileObject metadata = fileSystemManager.resolveFile("gz:tar:${gem.absolutePath}!/metadata.gz!metadata")
         //StringWriter writer = new StringWriter()
@@ -135,13 +141,24 @@ class GemInstaller {
         Files.copy(gem.toPath(), (new File(cacheDir, gem.name)).toPath())
     }
 
-    /** Extract the gemspec file from the dataTarGz provided into the ${installDir}/specifications */
-    protected void extractSpecification(File installDir, FileObject dataTarGz, Gem gem) {
-        FileObject gemspec = dataTarGz.getChild("${gem.name}.gemspec")
-        String outputFile = "${gem.name}-${gem.version}.gemspec"
+    /** Extract the gemspec file from the {@code Gem} provided into the ${installDir}/specifications */
+    protected void extractSpecification(File installDir, Gem gem) {
+        String outputFileName = "${gem.name}-${gem.version.version}.gemspec"
+        FileObject outputFile = fileSystemManager.resolveFile(new File(installDir, 'specifications'), outputFileName)
 
-        File specification = new File(installDir, ['specifications', outputFile].join(File.separator))
+        PrintWriter writer = new PrintWriter(outputFile.content.outputStream)
+        writer.write(gem.toRuby())
+        writer.flush()
+    }
 
-        IOUtils.copy(gemspec.content.inputStream, specification.newOutputStream())
+    protected void extractData(File installDir, FileObject dataTarGz, Gem gem) {
+        String dir = "${gem.name}-${gem.version.version}"
+        FileObject outputDir = fileSystemManager.resolveFile(new File(installDir, 'gems'), dir)
+        outputDir.copyFrom(dataTarGz, new AllFileSelector())
+    }
+
+    protected void extractExecutables(File installDir, FileObject dataTarGz, Gem gem) {
+        FileObject binObject = fileSystemManager.resolveFile(installDir, 'bin')
+        binObject.copyFrom(dataTarGz.getChild(gem.bindir), new AllFileSelector())
     }
 }
