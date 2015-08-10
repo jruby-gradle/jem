@@ -1,5 +1,7 @@
 package com.github.jrubygradle.groovygem.internal
 
+import com.github.jrubygradle.groovygem.Gem
+import com.github.jrubygradle.groovygem.Version
 import spock.lang.*
 
 import java.nio.file.Files
@@ -68,6 +70,31 @@ class GemInstallerSpec extends Specification {
 
         expect:
         installer.isValidGem(gem)
+    }
+
+    def "gemFullName() should be name-version by default"() {
+        given:
+        installer = new GemInstaller(installDir, [])
+        Gem gem = new Gem()
+        gem.name = 'thor'
+        gem.version = new Version()
+        gem.version.version = '1.0'
+
+        expect:
+        installer.gemFullName(gem) == 'thor-1.0'
+    }
+
+    def "gemFullName() should be name-version-platform if platform is present"() {
+        given:
+        installer = new GemInstaller(installDir, [])
+        Gem gem = new Gem()
+        gem.name = 'thread_safe'
+        gem.platform = 'java'
+        gem.version = new Version()
+        gem.version.version = '1.0'
+
+        expect:
+        installer.gemFullName(gem) == 'thread_safe-1.0-java'
     }
 }
 

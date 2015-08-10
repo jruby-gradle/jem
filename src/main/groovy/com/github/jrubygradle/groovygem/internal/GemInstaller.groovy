@@ -137,6 +137,16 @@ class GemInstaller {
         }
     }
 
+    String gemFullName(Gem gem) {
+        String fullName = "${gem.name}-${gem.version.version}"
+
+        if ((gem.platform) && (gem.platform != 'ruby')) {
+            fullName = "${fullName}-${gem.platform}"
+        }
+
+        return fullName
+    }
+
     /** Cache the gem in GEM_HOME/cache */
     protected void cacheGemInInstallDir(File installDir, File gem) {
         File cacheDir = new File(installDir, 'cache')
@@ -145,11 +155,7 @@ class GemInstaller {
 
     /** Extract the gemspec file from the {@code Gem} provided into the ${installDir}/specifications */
     protected void extractSpecification(File installDir, Gem gem) {
-        String fileName = "${gem.name}-${gem.version.version}"
-        if (gem.platform != 'ruby') {
-            fileName = "${fileName}-${gem.platform}"
-        }
-        String outputFileName = "${fileName}.gemspec"
+        String outputFileName = "${gemFullName(gem)}.gemspec"
         FileObject outputFile = fileSystemManager.resolveFile(new File(installDir, 'specifications'), outputFileName)
 
         PrintWriter writer = new PrintWriter(outputFile.content.outputStream)
@@ -158,21 +164,24 @@ class GemInstaller {
         outputFile.content.close()
     }
 
+    /** Extract the data.tar.gz contents into gems/full-name/* */
     protected void extractData(File installDir, FileObject dataTarGz, Gem gem) {
-        String dir = "${gem.name}-${gem.version.version}"
-        if (gem.platform != 'ruby') {
-            dir = "${dir}-${gem.platform}"
-        }
         logger.info("Extracting into ${installDir} from ${gem.name}")
-        FileObject outputDir = fileSystemManager.resolveFile(new File(installDir, 'gems'), dir)
+        FileObject outputDir = fileSystemManager.resolveFile(new File(installDir, 'gems'), gemFullName(gem))
         outputDir.copyFrom(dataTarGz, new AllFileSelector())
         outputDir.close()
     }
 
+    /** Extract the executables from the specified bindir */
     protected void extractExecutables(File installDir, FileObject dataTarGz, Gem gem) {
+        /*
+         * default to 'bin' if the bindir isn't otherwise set, it's not clear whether
+         * it is always guaranteed to be set or not though
+         */
         String binDir = gem.bindir ?: 'bin'
         FileObject binObject = fileSystemManager.resolveFile(installDir, 'bin')
         FileObject child = dataTarGz.getChild(binDir)
+        /* if child  is null then we couldn't find the bindir, which means we should just bail */
         if (!child) {
             return
         }
