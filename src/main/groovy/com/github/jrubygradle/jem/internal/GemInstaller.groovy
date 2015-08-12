@@ -5,7 +5,7 @@ import org.jboss.shrinkwrap.api.ArchivePath
 import org.jboss.shrinkwrap.api.GenericArchive
 import org.jboss.shrinkwrap.api.ShrinkWrap
 import org.jboss.shrinkwrap.api.Node
-import org.jboss.shrinkwrap.api.classloader.ShrinkWrapClassLoader
+import org.jboss.shrinkwrap.api.exporter.ExplodedExporter
 import org.jboss.shrinkwrap.api.importer.TarImporter
 import org.jboss.shrinkwrap.impl.base.io.IOUtil
 import org.slf4j.Logger
@@ -141,20 +141,10 @@ class GemInstaller {
 
     /** Extract the data.tar.gz contents into gems/full-name/* */
     protected void extractData(File installDir, GenericArchive dataTarGz, Gem gem) {
-        ClassLoader loader = new ShrinkWrapClassLoader(dataTarGz)
-
-        File outputDir = new File(installDir, ['gems', gemFullName(gem)].join(File.separator))
+        File outputDir = new File(installDir, 'gems')
         outputDir.mkdirs()
 
-        gem.files.sort().each { String fileName ->
-            File outputFile = new File(outputDir, fileName)
-            outputFile.parentFile.mkdirs()
-            InputStream stream = loader.getResourceAsStream(fileName)
-
-            if (stream) {
-                IOUtil.copy(stream, outputFile.newOutputStream())
-            }
-        }
+        dataTarGz.as(ExplodedExporter.class).exportExploded(outputDir, gemFullName(gem))
     }
 
     /** Extract the executables from the specified bindir */
