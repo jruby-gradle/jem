@@ -1,4 +1,4 @@
-package com.github.jrubygradle.groovygem
+package com.github.jrubygradle.jem
 
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked

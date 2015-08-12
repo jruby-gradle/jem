@@ -1,8 +1,8 @@
-package com.github.jrubygradle.groovygem
+package com.github.jrubygradle.jem
 
 import groovy.transform.CompileStatic
 
-import com.github.jrubygradle.groovygem.internal.GemInstaller as GemInstallerImpl
+import com.github.jrubygradle.jem.internal.GemInstaller as GemInstallerImpl
 
 /**
  * GemInstaller manages the installation of a .gem file into a given directory

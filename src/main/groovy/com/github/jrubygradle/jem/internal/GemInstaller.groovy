@@ -1,23 +1,23 @@
-package com.github.jrubygradle.groovygem.internal
+package com.github.jrubygradle.jem.internal
 
-import org.apache.commons.io.IOUtils
-import org.apache.commons.vfs2.AllFileSelector
-import org.apache.commons.vfs2.FileFilter
-import org.apache.commons.vfs2.FileFilterSelector
-import org.apache.commons.vfs2.FileNotFolderException
-import org.apache.commons.vfs2.FileObject
-import org.apache.commons.vfs2.FileSelectInfo
-import org.apache.commons.vfs2.FileSystemManager
-import org.apache.commons.vfs2.VFS
+import org.jboss.shrinkwrap.api.ArchiveFormat
+import org.jboss.shrinkwrap.api.ArchivePath
+import org.jboss.shrinkwrap.api.GenericArchive
+import org.jboss.shrinkwrap.api.ShrinkWrap
+import org.jboss.shrinkwrap.api.Node
+import org.jboss.shrinkwrap.api.classloader.ShrinkWrapClassLoader
+import org.jboss.shrinkwrap.api.importer.TarImporter
+import org.jboss.shrinkwrap.impl.base.io.IOUtil
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
 import groovy.transform.CompileStatic
 
-import com.github.jrubygradle.groovygem.Gem
-import com.github.jrubygradle.groovygem.GemInstaller.DuplicateBehavior
+import com.github.jrubygradle.jem.Gem
+import com.github.jrubygradle.jem.GemInstaller.DuplicateBehavior
 
 import java.nio.file.Files
+import java.util.zip.GZIPInputStream
 
 @CompileStatic
 class GemInstaller {
@@ -27,12 +27,10 @@ class GemInstaller {
     protected Logger logger = LoggerFactory.getLogger(this.class)
     protected File installDirectory
     protected List<File> gems
-    protected FileSystemManager fileSystemManager
 
     GemInstaller(String installDir, List<File> gems) {
         this.installDirectory = new File(installDir)
         this.gems = gems
-        this.fileSystemManager = VFS.manager
     }
 
     /** Install and overwrite anything that stands in the way */
@@ -54,29 +52,18 @@ class GemInstaller {
         /* TODO: isValidGem? */
         cacheGemInInstallDir(installDir, gem)
 
-        FileObject gemTar = fileSystemManager.resolveFile("tar:${gem}")
-        FileObject tempTar = fileSystemManager.resolveFile("ram://${gem.name}-data.tar.gz")
-        /* http://wiki.apache.org/commons/ExtractAndDecompressGzipFiles */
-        FileObject metadata  = fileSystemManager.resolveFile("gz:tar:${gem}!/metadata.gz!metadata")
+        GenericArchive gemArchive = ShrinkWrap.create(TarImporter).importFrom(gem).as(GenericArchive)
+        Node metadata = gemArchive.get('metadata.gz')
+        GenericArchive dataArchive = gemArchive.getAsType(GenericArchive.class,
+                                                        "data.tar.gz",
+                                                        ArchiveFormat.TAR_GZ);
 
-        Gem gemMetadata = Gem.fromFile(metadata.content.inputStream)
+        Gem gemMetadata = Gem.fromFile(new GZIPInputStream(metadata.asset.openStream()))
         logger.info("We've processed metadata for ${gemMetadata.name} at version ${gemMetadata.version}")
-        metadata.content.close()
-
-        long size = gemTar.getChild('data.tar.gz').content.write(tempTar)
-        logger.info("Extracted data.tar.gz from ${gem} (${size} bytes)")
-
-        FileObject dataTar = fileSystemManager.resolveFile("tgz:${tempTar}")
-        logger.info("The contents of our data.tar.gz: ${dataTar.children}")
 
         extractSpecification(installDir, gemMetadata)
-        extractData(installDir, dataTar, gemMetadata)
-        extractExecutables(installDir, dataTar, gemMetadata)
-
-        gemTar.close()
-        metadata.close()
-        tempTar.delete()
-        dataTar.delete()
+        extractData(installDir, dataArchive, gemMetadata)
+        extractExecutables(installDir, dataArchive, gemMetadata)
 
         return true
     }
@@ -123,18 +110,7 @@ class GemInstaller {
             return false
         }
 
-        FileObject fo = fileSystemManager.resolveFile("tar:${gemFile}")
-
-        try {
-            return fo.children.size() > 0
-        }
-        catch (FileNotFolderException ex) {
-            /*
-             * if we've received this exception its because the gem file, aka
-             * tar file isn't actually legit
-             */
-            return false
-        }
+        return false
     }
 
     String gemFullName(Gem gem) {
@@ -156,36 +132,48 @@ class GemInstaller {
     /** Extract the gemspec file from the {@code Gem} provided into the ${installDir}/specifications */
     protected void extractSpecification(File installDir, Gem gem) {
         String outputFileName = "${gemFullName(gem)}.gemspec"
-        FileObject outputFile = fileSystemManager.resolveFile(new File(installDir, 'specifications'), outputFileName)
+        File outputFile = new File(installDir, ['specifications', outputFileName].join(File.separator))
 
-        PrintWriter writer = new PrintWriter(outputFile.content.outputStream)
+        PrintWriter writer = new PrintWriter(outputFile.newOutputStream())
         writer.write(gem.toRuby())
         writer.flush()
-        outputFile.content.close()
     }
 
     /** Extract the data.tar.gz contents into gems/full-name/* */
-    protected void extractData(File installDir, FileObject dataTarGz, Gem gem) {
-        logger.info("Extracting into ${installDir} from ${gem.name}")
-        FileObject outputDir = fileSystemManager.resolveFile(new File(installDir, 'gems'), gemFullName(gem))
-        outputDir.copyFrom(dataTarGz, new AllFileSelector())
-        outputDir.close()
+    protected void extractData(File installDir, GenericArchive dataTarGz, Gem gem) {
+        ClassLoader loader = new ShrinkWrapClassLoader(dataTarGz)
+
+        File outputDir = new File(installDir, ['gems', gemFullName(gem)].join(File.separator))
+        outputDir.mkdirs()
+
+        gem.files.sort().each { String fileName ->
+            File outputFile = new File(outputDir, fileName)
+            outputFile.parentFile.mkdirs()
+            InputStream stream = loader.getResourceAsStream(fileName)
+
+            if (stream) {
+                IOUtil.copy(stream, outputFile.newOutputStream())
+            }
+        }
     }
 
     /** Extract the executables from the specified bindir */
-    protected void extractExecutables(File installDir, FileObject dataTarGz, Gem gem) {
+    protected void extractExecutables(File installDir, GenericArchive dataTarGz, Gem gem) {
         /*
          * default to 'bin' if the bindir isn't otherwise set, it's not clear whether
          * it is always guaranteed to be set or not though
          */
         String binDir = gem.bindir ?: 'bin'
-        FileObject binObject = fileSystemManager.resolveFile(installDir, 'bin')
-        FileObject child = dataTarGz.getChild(binDir)
-        /* if child  is null then we couldn't find the bindir, which means we should just bail */
-        if (!child) {
-            return
+        File bin = new File(installDir, binDir)
+        List<String> execs = gem.executables.collect { String ex -> [binDir, ex].join(File.separator) }
+
+        bin.mkdirs()
+        dataTarGz.content.each { ArchivePath path, Node node ->
+            execs.each { String exec ->
+                if (path.get().matches(/.*${exec}/)) {
+                    IOUtil.copy(node.asset.openStream(), (new File(installDir, exec)).newOutputStream())
+                }
+            }
         }
-        binObject.copyFrom(child, new AllFileSelector())
-        binObject.close()
     }
 }

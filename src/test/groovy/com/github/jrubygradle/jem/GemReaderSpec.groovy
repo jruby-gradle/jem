@@ -1,4 +1,4 @@
-package com.github.jrubygradle.groovygem
+package com.github.jrubygradle.jem
 
 import spock.lang.*
 

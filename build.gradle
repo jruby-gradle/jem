@@ -25,16 +25,15 @@ dependencies {
     compile 'com.fasterxml.jackson.core:jackson-annotations:2.5.4'
     compile 'com.fasterxml.jackson.core:jackson-databind:2.5.4'
 
-    /* Used for reading into tar, aka gem, files */
-    compile 'org.apache.commons:commons-vfs2:2.1-SNAPSHOT'
-    /* Needed to provide the tar file provider */
-    compile 'org.apache.commons:commons-compress:1.9+'
-    //compile 'org.apache.commons:commons-vfs2:2.0'
-    compile 'org.apache.commons:commons-io:1.3.2+'
+    /* shrinkwrap is used for digging into archives */
+    compile "org.jboss.shrinkwrap:shrinkwrap-bom:1.2.2+"
+    compile "org.jboss.shrinkwrap:shrinkwrap-depchain:1.2.2+"
 
     codenarc "org.codenarc:CodeNarc:0.24"
 
     testCompile "org.spockframework:spock-core:1.0-groovy-2.4"
+    testCompile 'org.apache.commons:commons-io:1.3.2+'
+
 }
 
 codenarc {

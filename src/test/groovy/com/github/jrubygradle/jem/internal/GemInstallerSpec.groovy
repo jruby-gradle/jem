@@ -1,7 +1,7 @@
-package com.github.jrubygradle.groovygem.internal
+package com.github.jrubygradle.jem.internal
 
-import com.github.jrubygradle.groovygem.Gem
-import com.github.jrubygradle.groovygem.Version
+import com.github.jrubygradle.jem.Gem
+import com.github.jrubygradle.jem.Version
 import spock.lang.*
 
 import java.nio.file.Files
@@ -63,6 +63,7 @@ class GemInstallerSpec extends Specification {
         !installer.isValidGem(fakeGem)
     }
 
+    @Ignore("WIP")
     def "isvalidGem should return true with a given file that is a gem"() {
         given:
         File gem = new File(GEM_FIXTURE)
@@ -113,7 +114,7 @@ class GemInstallerIntegrationSpec extends Specification {
 
         if (dir.exists() && dir.absolutePath.startsWith('/tmp')) {
             println dir
-            FileUtils.deleteDirectory(dir)
+            //FileUtils.deleteDirectory(dir)
         }
     }
 

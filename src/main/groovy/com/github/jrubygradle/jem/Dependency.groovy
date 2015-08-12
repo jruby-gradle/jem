@@ -1,4 +1,4 @@
-package com.github.jrubygradle.groovygem
+package com.github.jrubygradle.jem
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import groovy.transform.CompileStatic
