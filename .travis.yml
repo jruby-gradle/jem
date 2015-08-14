@@ -1,0 +1,22 @@
+language: java
+sudo: false
+
+install:
+ - ./gradlew clean
+
+script:
+ - ./gradlew -S -i
+
+jdk:
+ - oraclejdk7
+ - oraclejdk8
+ - openjdk7
+
+os:
+ - linux
+
+env: TERM=dumb
+
+cache:
+  directories:
+    - $HOME/.gradle
