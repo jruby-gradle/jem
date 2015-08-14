@@ -198,7 +198,6 @@ public class GemInstaller {
         for (Map.Entry<ArchivePath, Node> entry : dataTarGz.getContent().entrySet()) {
             ArchivePath path = entry.getKey();
             Node node = entry.getValue();
-            logger.info(node.toString());
             Matcher m = p.matcher(path.get());
 
             if (m.matches()) {
