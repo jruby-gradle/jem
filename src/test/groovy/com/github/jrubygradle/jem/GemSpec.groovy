@@ -70,7 +70,7 @@ class GemSpec extends Specification {
         gem.version.version == '0.19.1'
 
         and: "its properties should equal what's in the YAML"
-        gem.getProperty(property) == value
+        gem."${property}" == value
 
         where:
         property               | value
