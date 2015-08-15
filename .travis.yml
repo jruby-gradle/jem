@@ -8,16 +8,9 @@ jdk:
 - oraclejdk7
 - oraclejdk8
 - openjdk7
-os:
-- linux
-env:
-  matrix:
-  - TERM=dumb
-  global:
-    secure: vrpA/1ZRdMhmLPNYWqf5vAHTA3if5ScYBYnxMZOMS9cNWdy9zxlwz1rmATAVeZpk82d3YMYwbBWGwErFA3PlPw4fld/bUTZF35PRhsS+oRWISB7jeV+1LqAqmN6zu2Bw+rxpYhGCfTEhx2BONpdpXUvHD10q3D37uiZSqjKNIzpNnYC1vcyhLmpN/rRBEb7H7CuchIWCXf0w3HA/K83euZ6VQsXg2F+rOsVYND3Oga9OJYPEfxWNd7lLc6mnrWySwac9sRtDNktw4Me1pXHzIY9huKcufiYvbGtZnFu75mj2ARx4i5QaI9rd8M/lbtfKc4QA7KYmCeS+CXykZrVPOPhYNuPLWINc1DK61iv+WeDog+6mZfsEhbo2atuSpZrC0P6pwG0D6ceCrCQ437/2HSGEtYRcgFEmQQ2w9rKqMiImYXfDMz5qoZg6P1TJ3UQUNysnunMoA17abLLKAxfLvGSm8vWwCbuThhSdn5dZo+MiZmZpd0SsRwPtXrTf7Gph9KnFkSZDSLjgZd3dvZZxu5GrTh1LSBXauIrQXtm/jD4OiQL5hjWlJzh9niiVTtkp/ztj+uzHdDtPUGeEECtD+z5EthzCj+4cpzV+b8KUuF/RlcKGLVoserzYCJy5y2V3BT39GAya9YVuW5YYIEDoIifSlu9qkVCGqFrA93VQanM=
-
 cache:
   directories:
   - "$HOME/.gradle"
-
-after_success: "./gradlew bintrayUpload -PbintrayUser=rtyler -PbintrayKey=${BINTRAY_KEY}"
+after_success: "./gradlew bintrayUpload -i -PbintrayUser=rtyler -PbintrayKey=${BINTRAY_KEY}"
+bintray_key:
+  secure: lGYEgJWQiA0k5ibqbUKuogyKPMZecl/3XlCYfeYr7L+eHwCUW7OALq9CHdM5IQhzLX8i+hq3/KYC/RUzl+LAihJqnF3htl5LH8wQyxH2k0bR/6i7BHEiM3gw+qczA+4ZGQ3y/eJKefKv8SZ0xxZEw8/Fzpgljo2LmZyNg+kL/xLvYeQYD+gZhDHW2p60nyUalq39Iy/Hqyw3+Q/eXRFM5sOhf8WVlfzmky4okH0UMdUMbdFKsSMOw6HwU2OtgJXO2mgAIr0IAS3To4x96aThcUI+cgT5SMEek1bsLmjKYuqI7yWFAe6IuSMh8GpDBQSMSrQtCFG8yZmf959QJhG/1B0XfmHlbJAgncp3rnrpiVjaMb+bxE6P4agy1bhbzULmb9GUbhtfQpN3zHUQFt3ov4J+03TNOnw55k/hm1hu+0i/ScTYKHq1b0ZmnXlMY0oBBymB777FnpU43PrH4Uu7thh3WaEZMKCCM7O8cHBsX0O34z/2w9JZfrc+6m30arr32p+StBpqbsdPhktOqU9Wj0nPkgOhNE+h7z9aruW9nZ9RHU1RiS+QabckTfHS4jOC313eVaIUy6vZG3Xc89yYLIpXHS/1tPrCqsGI6JqLeYOkywqxgCYemk75hiB8HsADttnrKsaKt/hWPdN1/jlyoCyzgmbxiMYiq4oVB64GMJI=
