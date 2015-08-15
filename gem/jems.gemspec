@@ -2,7 +2,7 @@
 
 Gem::Specification.new do |s|
   s.name = 'jems'
-  s.version = '0.1.5'
+  s.version = '0.1.6'
   s.authors = ['Christian Meier']
   s.summary = 'JRuby Jems'
   s.files = ['jems.gemspec', 'lib/jems.rb']
