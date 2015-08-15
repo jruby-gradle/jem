@@ -50,14 +50,14 @@ public class GemInstaller {
         }
     }
 
-    public boolean installGem(File installDir, File gem, DuplicateBehavior onDuplicate) {
+    public Gem installGem(File installDir, File gem, DuplicateBehavior onDuplicate) {
         /* TODO: isValidGem? */
         try {
             cacheGemInInstallDir(installDir, gem);
         }
         catch (IOException ex) {
             logger.error("Failed to cache our gem in %s", installDir, ex);
-            return false;
+            return null;
         }
 
         Gem gemMetadata;
@@ -73,7 +73,7 @@ public class GemInstaller {
         }
         catch (IOException ex) {
             logger.error("Failed to process the metadata", ex);
-            return false;
+            return null;
         }
         logger.info(String.format("We've processed metadata for %s at version %s",
                 gemMetadata.name, gemMetadata.version.version));
@@ -96,7 +96,7 @@ public class GemInstaller {
                     gemMetadata.name, installDir), ex);
         }
 
-        return true;
+        return gemMetadata;
     }
 
     /**

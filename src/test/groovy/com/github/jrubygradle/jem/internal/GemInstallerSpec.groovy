@@ -6,7 +6,6 @@ import spock.lang.*
 
 import java.nio.file.Files
 import java.nio.file.Path
-import org.apache.commons.io.FileUtils
 
 class GemInstallerSpec extends Specification {
     static final String FIXTURES_ROOT = new File(['src', 'test', 'resources'].join(File.separator)).absolutePath
