@@ -1,7 +1,18 @@
+buildscript {
+    repositories {
+        jcenter()
+    }
+
+    dependencies {
+        classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:1.2"
+    }
+}
+
 apply plugin: 'java'
 apply plugin: 'groovy'
 apply plugin: 'maven'
 apply plugin: 'codenarc'
+apply from: 'gradle/releasing.gradle'
 
 version = '0.1.0'
 group = 'com.github.jrubygradle'

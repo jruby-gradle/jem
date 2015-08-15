@@ -1,22 +1,23 @@
 language: java
 sudo: false
-
 install:
- - ./gradlew clean
-
+- "./gradlew clean"
 script:
- - ./gradlew -S -i
-
+- "./gradlew -S -i"
 jdk:
- - oraclejdk7
- - oraclejdk8
- - openjdk7
-
+- oraclejdk7
+- oraclejdk8
+- openjdk7
 os:
- - linux
-
-env: TERM=dumb
+- linux
+env:
+  matrix:
+  - TERM=dumb
+  global:
+    secure: vrpA/1ZRdMhmLPNYWqf5vAHTA3if5ScYBYnxMZOMS9cNWdy9zxlwz1rmATAVeZpk82d3YMYwbBWGwErFA3PlPw4fld/bUTZF35PRhsS+oRWISB7jeV+1LqAqmN6zu2Bw+rxpYhGCfTEhx2BONpdpXUvHD10q3D37uiZSqjKNIzpNnYC1vcyhLmpN/rRBEb7H7CuchIWCXf0w3HA/K83euZ6VQsXg2F+rOsVYND3Oga9OJYPEfxWNd7lLc6mnrWySwac9sRtDNktw4Me1pXHzIY9huKcufiYvbGtZnFu75mj2ARx4i5QaI9rd8M/lbtfKc4QA7KYmCeS+CXykZrVPOPhYNuPLWINc1DK61iv+WeDog+6mZfsEhbo2atuSpZrC0P6pwG0D6ceCrCQ437/2HSGEtYRcgFEmQQ2w9rKqMiImYXfDMz5qoZg6P1TJ3UQUNysnunMoA17abLLKAxfLvGSm8vWwCbuThhSdn5dZo+MiZmZpd0SsRwPtXrTf7Gph9KnFkSZDSLjgZd3dvZZxu5GrTh1LSBXauIrQXtm/jD4OiQL5hjWlJzh9niiVTtkp/ztj+uzHdDtPUGeEECtD+z5EthzCj+4cpzV+b8KUuF/RlcKGLVoserzYCJy5y2V3BT39GAya9YVuW5YYIEDoIifSlu9qkVCGqFrA93VQanM=
 
 cache:
   directories:
-    - $HOME/.gradle
+  - "$HOME/.gradle"
+
+after_success: "./gradlew bintrayUpload -PbintrayUser=rtyler -PbintrayKey=${BINTRAY_KEY}"
