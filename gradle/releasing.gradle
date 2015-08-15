@@ -20,7 +20,6 @@ bintray {
     user = project.bintrayUser
     key = project.bintrayKey
     publish = true
-    dryRun = false
     configurations = ['archives']
     /*
      * Only only publish when we're tagging a release and if we've executed on

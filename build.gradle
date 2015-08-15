@@ -14,7 +14,7 @@ apply plugin: 'maven'
 apply plugin: 'codenarc'
 apply from: 'gradle/releasing.gradle'
 
-version = '0.1.1'
+version = '0.1.2'
 group = 'com.github.jrubygradle'
 description = 'A library for managing Ruby gems'
 defaultTasks 'check', 'assemble'
