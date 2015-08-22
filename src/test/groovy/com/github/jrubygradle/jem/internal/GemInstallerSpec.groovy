@@ -6,6 +6,8 @@ import spock.lang.*
 
 import java.nio.file.Files
 import java.nio.file.Path
+import org.apache.commons.io.FileUtils
+
 
 class GemInstallerSpec extends Specification {
     static final String FIXTURES_ROOT = new File(['src', 'test', 'resources'].join(File.separator)).absolutePath
@@ -112,8 +114,7 @@ class GemInstallerIntegrationSpec extends Specification {
         File dir = new File(installDir)
 
         if (dir.exists() && dir.absolutePath.startsWith('/tmp')) {
-            println dir
-            //FileUtils.deleteDirectory(dir)
+            FileUtils.deleteDirectory(dir)
         }
     }
 

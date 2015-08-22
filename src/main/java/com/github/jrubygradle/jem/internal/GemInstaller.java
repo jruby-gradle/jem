@@ -15,7 +15,6 @@ import com.github.jrubygradle.jem.Gem;
 import com.github.jrubygradle.jem.GemInstaller.DuplicateBehavior;
 
 import java.io.*;
-import java.nio.file.Files;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
