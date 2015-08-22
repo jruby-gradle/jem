@@ -69,15 +69,15 @@ task sourcesJar(type: Jar, dependsOn: classes) {
     from sourceSets.main.allSource
 }
 
-task groovydocJar(type: Jar) {
-    dependsOn groovydoc
-    classifier = 'groovydoc'
-    from groovydoc.destinationDir
+task javadocJar(type: Jar) {
+    dependsOn javadoc
+    classifier = 'javadoc'
+    from javadoc.destinationDir
 }
 
 artifacts {
     archives sourcesJar
-    archives groovydocJar
+    archives javadocJar
 }
 
 bintray {
@@ -107,6 +107,6 @@ bintray {
 }
 bintrayUpload.dependsOn assemble
 assemble.dependsOn check
-assemble.dependsOn groovydocJar
+assemble.dependsOn javadocJar
 assemble.dependsOn sourcesJar
 
