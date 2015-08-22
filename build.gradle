@@ -39,7 +39,7 @@ dependencies {
     /* Used for FileUtils and deleting integration test dirs */
     testCompile 'org.apache.commons:commons-io:1.3.2'
     testCompile "org.spockframework:spock-core:1.0-groovy-2.4"
-    testCompile 'org.apache.commons:commons-io:1.3.2+'
+    testCompile 'cglib:cglib-nodep:3.1'
 }
 
 test {

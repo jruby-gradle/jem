@@ -14,22 +14,64 @@ public class GemInstaller {
         FAIL
     };
 
-
     protected com.github.jrubygradle.jem.internal.GemInstaller impl;
 
+    /**
+     * Create an installer with the given installation directory and a single gem
+     *
+     * @param installDir
+     * @param gemPath
+     */
     public GemInstaller(String installDir, String gemPath) {
         this(installDir, new File(gemPath));
     }
 
+    /**
+     * Create an installer with the given installation directory and a single gem
+     *
+     * @param installDir
+     * @param gemFile
+     */
     public GemInstaller(String installDir, File gemFile) {
         this(installDir, Arrays.asList(gemFile));
     }
 
+    /**
+     * Create an installer with the given installation directory and a list of gems
+     *
+     * @param installDir
+     * @param gemPaths
+     */
     public GemInstaller(String installDir, List<File> gemPaths) {
         impl = new com.github.jrubygradle.jem.internal.GemInstaller(installDir, gemPaths);
     }
 
+    /**
+     * Inject a custom GemInstaller implementation that adheres to the private internal API.
+     *
+     * Chances are you do not want this constructor, which is largely used for unit testing!
+     *
+     * @param implementation
+     */
+    public GemInstaller(com.github.jrubygradle.jem.internal.GemInstaller implementation) {
+        impl = implementation;
+    }
+
+    /**
+     * Install the gems in the configured installation directory with all
+     * the default settings
+     */
     public void install() {
         impl.install();
+    }
+
+    /**
+     * Install the gems in the configuration installation directory with the given
+     * overwrite setting
+     *
+     * @param overwriteBehavior
+     */
+    public void install(DuplicateBehavior overwriteBehavior) {
+        impl.install(overwriteBehavior);
     }
 }
