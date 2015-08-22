@@ -23,7 +23,7 @@ import java.util.regex.Pattern;
 import java.util.zip.GZIPInputStream;
 
 public class GemInstaller {
-    public static final String[] GEM_HOME_DIRS = {"bin", "build_info", "cache", "doc",
+    public static final String[] GEM_HOME_DIRS = {"bin", "build_info", "doc",
             "extensions", "gems", "specifications"};
 
     protected Logger logger = LoggerFactory.getLogger(GemInstaller.class);
@@ -52,14 +52,6 @@ public class GemInstaller {
 
     public Gem installGem(File installDir, File gem, DuplicateBehavior onDuplicate) {
         /* TODO: isValidGem? */
-        try {
-            cacheGemInInstallDir(installDir, gem);
-        }
-        catch (IOException ex) {
-            logger.error("Failed to cache our gem in %s", installDir, ex);
-            return null;
-        }
-
         Gem gemMetadata;
         GenericArchive gemArchive = ShrinkWrap.create(TarImporter.class)
                                         .importFrom(gem).as(GenericArchive.class);
@@ -153,12 +145,6 @@ public class GemInstaller {
         }
 
         return fullName;
-    }
-
-    /** Cache the gem in GEM_HOME/cache */
-    protected void cacheGemInInstallDir(File installDir, File gem) throws IOException {
-        File cacheDir = new File(installDir, "cache");
-        Files.copy(gem.toPath(), (new File(cacheDir, gem.getName())).toPath());
     }
 
     /** Extract the gemspec file from the {@code Gem} provided into the ${installDir}/specifications */
