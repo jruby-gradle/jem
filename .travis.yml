@@ -5,7 +5,6 @@ install:
 script:
 - "./gradlew -S -i"
 jdk:
-- oraclejdk7
 - oraclejdk8
 - openjdk7
 cache:

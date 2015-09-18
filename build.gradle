@@ -91,7 +91,7 @@ bintray {
      * the JDK7 build. This is to prevent multiple attempts by the build matrix
      * to publish the artifacts
      */
-    dryRun = !((System.env.TRAVIS_TAG as boolean) && (System.env.TRAVIS_JDK_VERSION == 'oraclejdk7'))
+    dryRun = !((System.env.TRAVIS_TAG as boolean) && (System.env.TRAVIS_JDK_VERSION == 'openjdk7'))
 
     pkg {
         userOrg = 'jruby-gradle'
