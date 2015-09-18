@@ -14,7 +14,7 @@ apply plugin: 'maven'
 apply plugin: 'com.jfrog.bintray'
 
 version = '0.2.0'
-group = 'com.github.jrubygradle'
+group = 'com.github.jruby-gradle'
 description = 'A library for managing Ruby gems'
 defaultTasks 'check', 'assemble'
 
