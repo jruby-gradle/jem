@@ -157,7 +157,13 @@ public class GemInstaller {
         writer.flush();
     }
 
-    /** Extract the data.tar.gz contents into gems/full-name/* */
+    /**
+     * Extract the data.tar.gz contents into gems/full-name
+     *
+     * @param installDir relative or absoluate path to the installation destination directory
+     * @param dataTarGz instance of the archive from which to extract the gem data
+     * @param gem Gem instance containing the metadata about the provided dataTarGz archive
+     */
     protected void extractData(File installDir, GenericArchive dataTarGz, Gem gem) {
         File outputDir = new File(installDir, "gems");
         outputDir.mkdirs();
@@ -165,7 +171,14 @@ public class GemInstaller {
         dataTarGz.as(ExplodedExporter.class).exportExploded(outputDir, gemFullName(gem));
     }
 
-    /** Extract the executables from the specified bindir */
+    /**
+     * Extract the executables from the specified bindir
+     *
+     * @param installDir relative or absoluate path to the installation destination directory
+     * @param dataTarGz instance of the archive from which to extract the gem executables
+     * @param gem Gem instance containing the metadata about the provided dataTarGz archive
+     * @throws Exception catch-all exceptions incurred while attempting to read/write out files
+     */
     protected void extractExecutables(File installDir, GenericArchive dataTarGz, Gem gem) throws Exception {
         /*
          * default to "bin" if the bindir isn"t otherwise set, it"s not clear whether

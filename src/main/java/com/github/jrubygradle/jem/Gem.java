@@ -64,7 +64,9 @@ public class Gem {
      * Take the given argument and produce a {@code Gem} instance
      *
      * @param metadata a {@code java.lang.String}, a {@code java.io.File} or a {@code java.util.zip.GZIPInputStream}
-     * @return
+     * @return constructed instance of Gem or null if we couldn't process arguments
+     * @throws JsonProcessingException when the String provided is not JSON
+     * @throws IOException when the File provided can not be properly read
      */
     public static Gem fromFile(Object metadata) throws JsonProcessingException, IOException {
         if (metadata instanceof String) {
@@ -83,9 +85,10 @@ public class Gem {
     /**
      * Output the gemspec stub for this file
      *
-     * See <https://github.com/rubygems/rubygems/blob/165030689defe16680b7f336232db62024f49de4/lib/rubygems/specification.rb#L2422-L2512>
+     * See: https://github.com/rubygems/rubygems/blob/165030689defe16680b7f336232db62024f49de4/lib/rubygems/specification.rb#L2422-L2512
      *
-     * @return
+     * @return String representation of the computed .gemspec file
+     * @throws JsonProcessingException if some attributes could not be properly serialized out to JSON
      */
     public String toRuby() throws JsonProcessingException {
         String[] specification = {
@@ -127,7 +130,13 @@ public class Gem {
         return builder.toString();
     }
 
-    /** Convert whatever object we're given into a safe (see: JSON) reprepsentation */
+    /**
+     * Convert whatever object we're given into a safe (see: JSON) reprepsentation
+     *
+     * @param value Object to pass to Jackson to create a string representation of
+     * @return String representation of the value parameter
+     * @throws JsonProcessingException Exception when the value cannot be JSON serialized
+     */
     protected String sanitize(Object value) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         return mapper.writeValueAsString(value);
