@@ -1,5 +1,7 @@
 package com.github.jrubygradle.jem.internal;
 
+import com.github.jrubygradle.jem.GemInstallEvent;
+import com.github.jrubygradle.jem.GemInstallResult;
 import org.jboss.shrinkwrap.api.ArchiveFormat;
 import org.jboss.shrinkwrap.api.ArchivePath;
 import org.jboss.shrinkwrap.api.GenericArchive;
@@ -40,12 +42,36 @@ public class GemInstaller {
     }
 
     public void install(DuplicateBehavior onDuplicateBehavior) {
+        install(null, onDuplicateBehavior);
+    }
+
+    public void install(GemInstallEvent eventCallback, DuplicateBehavior onDuplicateBehavior) {
         if (!mkdirs()) {
             /* raise some exception? */
         }
 
-        for (File gem : this.gems) {
-            installGem(installDirectory, gem, onDuplicateBehavior);
+        for (File gemFile : this.gems) {
+            boolean shouldContinue = true;
+            Exception caughtException = null;
+            Gem gem = null;
+
+            try {
+                gem = installGem(installDirectory, gemFile, onDuplicateBehavior);
+            }
+            catch (Exception exc) {
+                caughtException = exc;
+            }
+
+            if (eventCallback instanceof GemInstallEvent) {
+                shouldContinue = eventCallback.onInstall(new GemInstallResult(gem,
+                        gemFile,
+                        installDirectory,
+                        caughtException));
+            }
+
+            if (!shouldContinue) {
+                break;
+            }
         }
     }
 

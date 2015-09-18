@@ -15,6 +15,7 @@ public class GemInstaller {
     };
 
     protected com.github.jrubygradle.jem.internal.GemInstaller impl;
+    protected GemInstallEvent callback;
 
     /**
      * Create an installer with the given installation directory and a single gem
@@ -73,5 +74,11 @@ public class GemInstaller {
      */
     public void install(DuplicateBehavior overwriteBehavior) {
         impl.install(overwriteBehavior);
+    }
+
+    /**
+     */
+    public void install(GemInstallEvent eventCallback) {
+        impl.install(eventCallback, DuplicateBehavior.OVERWRITE);
     }
 }

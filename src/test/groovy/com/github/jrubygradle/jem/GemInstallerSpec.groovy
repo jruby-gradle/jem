@@ -12,6 +12,7 @@ import com.github.jrubygradle.jem.internal.GemInstaller as GemInstallerImpl
 class GemInstallerSpec extends Specification {
     final String FIXTURES_ROOT = new File(['src', 'test', 'resources'].join(File.separator)).absolutePath
     final String GEM_FIXTURE = [FIXTURES_ROOT, 'thor-0.19.1.gem'].join(File.separator)
+    final String RACK_FIXTURE = [FIXTURES_ROOT, 'rack-1.6.4.gem'].join(File.separator)
 
     GemInstaller installer
     Path installDirPath = Files.createTempDirectory("geminstallerspec")
@@ -70,10 +71,75 @@ class GemInstallerSpec extends Specification {
         given:
         GemInstaller.DuplicateBehavior behavior = GemInstaller.DuplicateBehavior.OVERWRITE
         GemInstallerImpl impl = mockedImpl()
-        GemInstaller installer = new GemInstaller(impl)
+        installer = new GemInstaller(impl)
         1 * impl.install(behavior)
 
         expect:
         installer.install(behavior)
+    }
+
+    @Issue("https://github.com/jruby-gradle/jem/issues/6")
+    def "install() with a non-existent gem should call the callback with a failure"() {
+        given:
+        boolean calledBack = false
+        installer = new GemInstaller(installDir, [new File('foo.gem')])
+
+        when:
+        installer.install(new GemInstallEvent() {
+            @Override
+            public boolean onInstall(GemInstallResult result) {
+                calledBack = (result.type == GemInstallResult.Type.FAILURE)
+                return true;
+            }
+        })
+
+        then:
+        calledBack
+    }
+
+    @Issue("https://github.com/jruby-gradle/jem/issues/6")
+    def "install() with a valid gem should call the callback with a success"() {
+        given:
+        boolean calledBack = false
+        installer = new GemInstaller(installDir, new File(GEM_FIXTURE));
+
+        when:
+        installer.install(new GemInstallEvent() {
+            @Override
+            public boolean onInstall(GemInstallResult result) {
+                calledBack = (result.type == GemInstallResult.Type.SUCCESS)
+                return true;
+            }
+        })
+
+        then:
+        calledBack
+    }
+
+    @Issue("https://github.com/jruby-gradle/jem/issues/6")
+    def "install() with should stop with a false return"() {
+        given:
+        int calledBack = 0
+        installer = new GemInstaller(installDir, [new File(GEM_FIXTURE),
+                                                  new File(RACK_FIXTURE)])
+
+        when:
+        installer.install(new GemInstallEvent() {
+            @Override
+            public boolean onInstall(GemInstallResult result) {
+                calledBack += 1
+                return false;
+            }
+        })
+
+        then: 'the first gem should be installed'
+        (new File(installDir, 'specifications/thor-0.19.1.gemspec')).exists()
+
+        and: 'we should have been called back once'
+        calledBack == 1
+
+        and: 'the second gem should not be installed'
+        !(new File(installDir, 'specifications/rack-1.6.4.gemspec')).exists()
+
     }
 }

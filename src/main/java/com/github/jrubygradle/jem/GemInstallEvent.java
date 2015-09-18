@@ -7,6 +7,9 @@ import java.io.File;
  * {@code GemInstaller}
  */
 public interface GemInstallEvent {
-    public void onSuccess(Gem gem, File installationDir);
-    public void onFailure(Gem gem, File installationDir);
+    /**
+     * @param result Instance of {@code GemInstallResult}
+     * @return true if the installation should continue
+     */
+    public boolean onInstall(GemInstallResult result);
 }
