@@ -1,7 +1,6 @@
 = Jem
 
-
-image:https://travis-ci.org/jruby-gradle/jem.svg?branch=master["Build Status", link="https://travis-ci.org/jruby-gradle/jem"]
+image:https://travis-ci.org/jruby-gradle/jem.svg?branch=master["Build Status", link="https://travis-ci.org/jruby-gradle/jem"] image:https://api.bintray.com/packages/jruby-gradle/libraries/jem/images/download.svg[link="https://bintray.com/jruby-gradle/libraries/jem/_latestVersion"]
 
 `jem` is a library built in Java for processing
 link:http://guides.rubygems.org/what-is-a-gem/[Ruby .gem files]
