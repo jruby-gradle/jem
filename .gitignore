@@ -3,3 +3,4 @@ build/
 *.sw*
 .idea/
 *.iml
+/bin/

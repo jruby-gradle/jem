@@ -1,0 +1,19 @@
+/*
+ * Handle installing our artifacts into the Jenkins local repository for integration testing
+ * <https://wiki.jenkins-ci.org/display/JENKINS/Jenkins+Maven+Repository+Server>
+ */
+
+repositories {
+    maven {
+        url System.env['Jenkins.Repository']
+    }
+}
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            repository(url: System.env['Jenkins.Repository'])
+        }
+    }
+}
+
